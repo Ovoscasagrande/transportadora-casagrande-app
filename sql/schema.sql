@@ -350,128 +350,143 @@ grant execute on function public.eh_master()        to authenticated, anon;
 -- policies
 -- ---------------------------------------------------------------------------
 drop policy if exists usuarios_sel on public."usuarios";
-create policy usuarios_sel on public."usuarios" for select to authenticated
-  using (id = auth.uid() or public.meu_perfil() = 'gerencia');
-create policy usuarios_upd on public."usuarios" for update to authenticated
-  using (id = auth.uid() or public.eh_master());
+create policy usuarios_sel on public."usuarios" for select to authenticated using (id = auth.uid() or public.meu_perfil() = 'gerencia');
+drop policy if exists usuarios_ins on public."usuarios";
 create policy usuarios_ins on public."usuarios" for insert to authenticated with check (id = auth.uid() or public.meu_perfil() = 'gerencia');
-
-
-
+drop policy if exists usuarios_upd on public."usuarios";
+create policy usuarios_upd on public."usuarios" for update to authenticated using (id = auth.uid() or public.eh_master());
 
 drop policy if exists motoristas_sel on public."motoristas";
-create policy motoristas_sel on public."motoristas" for select to authenticated
-  using (public.meu_perfil() in ('gerencia','conferente','mecanico') or id = public.meu_motorista_id() or usuario_id = auth.uid());
-
+create policy motoristas_sel on public."motoristas" for select to authenticated using (public.meu_perfil() in ('gerencia','conferente','mecanico') or id = public.meu_motorista_id() or usuario_id = auth.uid());
+drop policy if exists motoristas_ins on public."motoristas";
 create policy motoristas_ins on public."motoristas" for insert to authenticated with check (true);
+drop policy if exists motoristas_upd on public."motoristas";
 create policy motoristas_upd on public."motoristas" for update to authenticated using (true);
 
 drop policy if exists veiculos_sel on public."veiculos";
 create policy veiculos_sel on public."veiculos" for select to authenticated using (true);
-
+drop policy if exists veiculos_ins on public."veiculos";
 create policy veiculos_ins on public."veiculos" for insert to authenticated with check (true);
+drop policy if exists veiculos_upd on public."veiculos";
 create policy veiculos_upd on public."veiculos" for update to authenticated using (true);
 
 drop policy if exists motorista_veiculo_sel on public."motorista_veiculo";
 create policy motorista_veiculo_sel on public."motorista_veiculo" for select to authenticated using (true);
-
+drop policy if exists motorista_veiculo_ins on public."motorista_veiculo";
 create policy motorista_veiculo_ins on public."motorista_veiculo" for insert to authenticated with check (true);
+drop policy if exists motorista_veiculo_upd on public."motorista_veiculo";
 create policy motorista_veiculo_upd on public."motorista_veiculo" for update to authenticated using (true);
 
 drop policy if exists veiculos_documentos_sel on public."veiculos_documentos";
 create policy veiculos_documentos_sel on public."veiculos_documentos" for select to authenticated using (true);
-
+drop policy if exists veiculos_documentos_ins on public."veiculos_documentos";
 create policy veiculos_documentos_ins on public."veiculos_documentos" for insert to authenticated with check (true);
+drop policy if exists veiculos_documentos_upd on public."veiculos_documentos";
 create policy veiculos_documentos_upd on public."veiculos_documentos" for update to authenticated using (true);
 
 drop policy if exists postos_sel on public."postos";
 create policy postos_sel on public."postos" for select to authenticated using (true);
-
+drop policy if exists postos_ins on public."postos";
 create policy postos_ins on public."postos" for insert to authenticated with check (true);
+drop policy if exists postos_upd on public."postos";
 create policy postos_upd on public."postos" for update to authenticated using (true);
 
 drop policy if exists jornadas_sel on public."jornadas";
 create policy jornadas_sel on public."jornadas" for select to authenticated using (true);
-
+drop policy if exists jornadas_ins on public."jornadas";
 create policy jornadas_ins on public."jornadas" for insert to authenticated with check (true);
+drop policy if exists jornadas_upd on public."jornadas";
 create policy jornadas_upd on public."jornadas" for update to authenticated using (true);
 
 drop policy if exists jornada_carregamentos_sel on public."jornada_carregamentos";
 create policy jornada_carregamentos_sel on public."jornada_carregamentos" for select to authenticated using (true);
-
+drop policy if exists jornada_carregamentos_ins on public."jornada_carregamentos";
 create policy jornada_carregamentos_ins on public."jornada_carregamentos" for insert to authenticated with check (true);
+drop policy if exists jornada_carregamentos_upd on public."jornada_carregamentos";
 create policy jornada_carregamentos_upd on public."jornada_carregamentos" for update to authenticated using (true);
 
 drop policy if exists jornada_conferencia_sel on public."jornada_conferencia";
 create policy jornada_conferencia_sel on public."jornada_conferencia" for select to authenticated using (true);
-
+drop policy if exists jornada_conferencia_ins on public."jornada_conferencia";
 create policy jornada_conferencia_ins on public."jornada_conferencia" for insert to authenticated with check (true);
+drop policy if exists jornada_conferencia_upd on public."jornada_conferencia";
 create policy jornada_conferencia_upd on public."jornada_conferencia" for update to authenticated using (true);
 
 drop policy if exists abastecimentos_sel on public."abastecimentos";
 create policy abastecimentos_sel on public."abastecimentos" for select to authenticated using (true);
-
+drop policy if exists abastecimentos_ins on public."abastecimentos";
 create policy abastecimentos_ins on public."abastecimentos" for insert to authenticated with check (true);
+drop policy if exists abastecimentos_upd on public."abastecimentos";
 create policy abastecimentos_upd on public."abastecimentos" for update to authenticated using (true);
 
 drop policy if exists despesas_sel on public."despesas";
 create policy despesas_sel on public."despesas" for select to authenticated using (true);
-
+drop policy if exists despesas_ins on public."despesas";
 create policy despesas_ins on public."despesas" for insert to authenticated with check (true);
+drop policy if exists despesas_upd on public."despesas";
 create policy despesas_upd on public."despesas" for update to authenticated using (true);
 
 drop policy if exists avisos_sel on public."avisos";
 create policy avisos_sel on public."avisos" for select to authenticated using (true);
-
+drop policy if exists avisos_ins on public."avisos";
 create policy avisos_ins on public."avisos" for insert to authenticated with check (true);
+drop policy if exists avisos_upd on public."avisos";
 create policy avisos_upd on public."avisos" for update to authenticated using (true);
 
 drop policy if exists ordens_servico_sel on public."ordens_servico";
 create policy ordens_servico_sel on public."ordens_servico" for select to authenticated using (true);
-
+drop policy if exists ordens_servico_ins on public."ordens_servico";
 create policy ordens_servico_ins on public."ordens_servico" for insert to authenticated with check (true);
+drop policy if exists ordens_servico_upd on public."ordens_servico";
 create policy ordens_servico_upd on public."ordens_servico" for update to authenticated using (true);
 
 drop policy if exists trocas_oleo_sel on public."trocas_oleo";
 create policy trocas_oleo_sel on public."trocas_oleo" for select to authenticated using (true);
-
+drop policy if exists trocas_oleo_ins on public."trocas_oleo";
 create policy trocas_oleo_ins on public."trocas_oleo" for insert to authenticated with check (true);
+drop policy if exists trocas_oleo_upd on public."trocas_oleo";
 create policy trocas_oleo_upd on public."trocas_oleo" for update to authenticated using (true);
 
 drop policy if exists tipos_despesa_sel on public."tipos_despesa";
 create policy tipos_despesa_sel on public."tipos_despesa" for select to authenticated using (true);
-
+drop policy if exists tipos_despesa_ins on public."tipos_despesa";
 create policy tipos_despesa_ins on public."tipos_despesa" for insert to authenticated with check (true);
+drop policy if exists tipos_despesa_upd on public."tipos_despesa";
 create policy tipos_despesa_upd on public."tipos_despesa" for update to authenticated using (true);
 
 drop policy if exists tipos_recebimento_sel on public."tipos_recebimento";
 create policy tipos_recebimento_sel on public."tipos_recebimento" for select to authenticated using (true);
-
+drop policy if exists tipos_recebimento_ins on public."tipos_recebimento";
 create policy tipos_recebimento_ins on public."tipos_recebimento" for insert to authenticated with check (true);
+drop policy if exists tipos_recebimento_upd on public."tipos_recebimento";
 create policy tipos_recebimento_upd on public."tipos_recebimento" for update to authenticated using (true);
 
 drop policy if exists auditoria_sel on public."auditoria";
 create policy auditoria_sel on public."auditoria" for select to authenticated using (true);
-
+drop policy if exists auditoria_ins on public."auditoria";
 create policy auditoria_ins on public."auditoria" for insert to authenticated with check (true);
+drop policy if exists auditoria_upd on public."auditoria";
 create policy auditoria_upd on public."auditoria" for update to authenticated using (true);
 
 drop policy if exists notificacoes_sel on public."notificacoes";
 create policy notificacoes_sel on public."notificacoes" for select to authenticated using (true);
-
+drop policy if exists notificacoes_ins on public."notificacoes";
 create policy notificacoes_ins on public."notificacoes" for insert to authenticated with check (true);
+drop policy if exists notificacoes_upd on public."notificacoes";
 create policy notificacoes_upd on public."notificacoes" for update to authenticated using (true);
 
 drop policy if exists convites_sel on public."convites";
 create policy convites_sel on public."convites" for select to authenticated using (true);
-
+drop policy if exists convites_ins on public."convites";
 create policy convites_ins on public."convites" for insert to authenticated with check (true);
+drop policy if exists convites_upd on public."convites";
 create policy convites_upd on public."convites" for update to authenticated using (true);
 
 drop policy if exists produtos_sel on public."produtos";
 create policy produtos_sel on public."produtos" for select to authenticated using (true);
-
+drop policy if exists produtos_ins on public."produtos";
 create policy produtos_ins on public."produtos" for insert to authenticated with check (true);
+drop policy if exists produtos_upd on public."produtos";
 create policy produtos_upd on public."produtos" for update to authenticated using (true);
 
 
