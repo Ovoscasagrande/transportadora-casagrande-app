@@ -540,6 +540,61 @@ drop policy if exists produtos_upd on public."produtos";
 create policy produtos_upd on public."produtos" for update to authenticated using (true);
 
 
+grant usage on schema public to authenticated, anon;
+grant select, insert, update, delete on all tables in schema public to authenticated;
+alter default privileges in schema public
+  grant select, insert, update, delete on tables to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
+
+
+create or replace function public.protege_colunas_usuario()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if public.eh_master() or public.meu_perfil() = 'gerencia' then
+    return new;
+  end if;
+  new.perfil    := old.perfil;
+  new.ativo     := old.ativo;
+  new.is_master := old.is_master;
+  new.id        := old.id;
+  return new;
+end $$;
+
+drop trigger if exists trg_protege_colunas_usuario on public.usuarios;
+create trigger trg_protege_colunas_usuario
+  before update on public.usuarios
+  for each row execute function public.protege_colunas_usuario();
+
+drop policy if exists usuarios_upd on public."usuarios";
+create policy usuarios_upd on public."usuarios"
+  for update to authenticated
+  using (id = auth.uid() or public.eh_master() or public.meu_perfil() = 'gerencia')
+  with check (id = auth.uid() or public.eh_master() or public.meu_perfil() = 'gerencia');
+
+create or replace function public.auto_cadastro_pendente(p_nome text default null)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare v_total int;
+begin
+  select count(*) into v_total from public.usuarios;
+  if v_total = 0 then
+    insert into public.usuarios (id, nome, email, perfil, ativo, is_master)
+    values (auth.uid(),
+            coalesce(p_nome, split_part(coalesce(auth.jwt()->>'email','dono'),'@',1)),
+            auth.jwt()->>'email', 'gerencia', true, true)
+    on conflict (id) do update set perfil='gerencia', ativo=true, is_master=true;
+    return jsonb_build_object('perfil','gerencia','master',true,'primeiro',true);
+  end if;
+  insert into public.usuarios (id, nome, email, perfil, ativo)
+  values (auth.uid(),
+          coalesce(p_nome, split_part(coalesce(auth.jwt()->>'email','membro'),'@',1)),
+          auth.jwt()->>'email', 'pendente', false)
+  on conflict (id) do nothing;
+  return jsonb_build_object('perfil','pendente','master',false,'primeiro',false);
+end $$;
+
+grant execute on function public.auto_cadastro_pendente(text) to authenticated;
+
+
 -- ===========================================================================
 -- todo cadastro novo entra PENDENTE; a gerência aprova
 -- ===========================================================================
