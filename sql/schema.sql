@@ -23,6 +23,9 @@ create table if not exists public."usuarios" (
   "perfis_extra" jsonb,
   "is_master" boolean
 );
+-- liga o perfil ao usuário do Supabase Auth
+alter table public."usuarios" drop constraint if exists usuarios_id_fkey;
+alter table public."usuarios" add constraint usuarios_id_fkey foreign key (id) references auth.users(id) on delete cascade;
 
 -- ---------------------------------------------------------------- motoristas
 create table if not exists public."motoristas" (
@@ -488,6 +491,30 @@ drop policy if exists produtos_ins on public."produtos";
 create policy produtos_ins on public."produtos" for insert to authenticated with check (true);
 drop policy if exists produtos_upd on public."produtos";
 create policy produtos_upd on public."produtos" for update to authenticated using (true);
+
+
+-- ===========================================================================
+-- todo cadastro novo entra como PENDENTE e a gerência aprova
+-- ===========================================================================
+create or replace function public.novo_usuario()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.usuarios (id, nome, email, perfil, ativo)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'nome', split_part(new.email,'@',1)),
+    new.email,
+    'pendente',
+    false
+  )
+  on conflict (id) do nothing;
+  return new;
+end $$;
+
+drop trigger if exists trg_novo_usuario on auth.users;
+create trigger trg_novo_usuario
+  after insert on auth.users
+  for each row execute function public.novo_usuario();
 
 
 -- ===========================================================================
